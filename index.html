@@ -9,13 +9,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Scrolls</title>
     <style>
       body {
         background-color: aliceblue;
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        overflow-x: hidden;
       }
 
       .carousel {
@@ -27,16 +27,15 @@
         overflow-y: visible;
         width: 100%;
         scrollbar-width: none;
-        scroll-snap-type: x mandatory;
         padding: 1rem;
         scroll-padding: 1rem;
+        scroll-snap-type: x mandatory;
       }
 
       .card {
         scroll-behavior: smooth;
-        scroll-snap-align: start;
+        scroll-snap-align: var(--snap);
         display: flex;
-        flex: 0 0 22rem;
         align-items: center;
         flex-direction: column;
         background-color: white;
@@ -45,25 +44,71 @@
         box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
       }
 
+      .large {
+        flex: 0 0 22rem;
+        height: 30rem;
+      }
+
+      .small {
+        flex: 0 0 13.5rem;
+        height: 15.625rem;
+      }
+
+      .option {
+        background-color: white;
+        > :not(div) {
+            padding-inline: 1rem;
+        }
+      }
+
       form {
         margin: 1rem;
         padding: 1rem;
         background-color: white;
+        > * {
+          width: 100%;
+        }
+        > :nth-child(even) {
+          margin-bottom: 1rem;
+        }
       }
     </style>
   </head>
   <body>
-    <form id="options">
+    <form id="options" onsubmit="return false">
       <label>Number of NBAs</label>
       <input name="number" type="number" value="7" min="0" />
+      <label>Snapping</label>
+      <select name="snapping">
+        <option value="none">None</option>
+        <option value="start">Start</option>
+        <option value="end">End</option>
+        <option value="center">Center</option>
+      </select>
+      <label>Size</label>
+      <select name="size">
+        <option value="large">Large</option>
+        <option value="small">Small</option>
+      </select>
     </form>
 
-    <div class="carousel"></div>
+    <div class="option">
+      <h1>Option 1</h1>
+      <p> - Lose drag scrolling on desktop</p>
+      <p> - Very native, will feel as smooth as possible with no compatability issues</p>
+      <p> - Best for mobile device support</p>
+      <div class="carousel"></div>
+    </div>
 
     <script>
       const form = document.getElementById("options");
-      function cloneCard() {
-        return document.querySelector("#card").content.cloneNode(true);
+      function cloneCard(size) {
+        const fragment = document
+          .querySelector("#card")
+          .content.cloneNode(true);
+        fragment.querySelector(".card").classList.add(size);
+
+        return fragment;
       }
       form.addEventListener("change", (event) => {
         render();
@@ -74,16 +119,19 @@
       });
 
       function render() {
-        const { number } = Object.fromEntries(new FormData(form));
+        const { number, snapping, size } = Object.fromEntries(
+          new FormData(form)
+        );
 
         let cards = [];
         for (let i = 0; i < number; i++) {
-          const card = cloneCard();
+          const card = cloneCard(size);
           cards.push(card);
         }
 
         for (const carousel of caoursels) {
           carousel.innerHTML = "";
+          carousel.style.setProperty("--snap", snapping);
           for (const card of cards) {
             carousel.appendChild(card);
           }
