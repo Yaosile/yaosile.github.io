@@ -30,6 +30,10 @@
       }
 
       .carousel {
+        user-select: none;
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
@@ -43,10 +47,6 @@
       }
 
       .card {
-        user-select: none;
-        -webkit-user-select: none; /* Safari */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
         scroll-behavior: smooth;
         scroll-snap-align: var(--snap);
         display: flex;
@@ -170,31 +170,60 @@
 
       const draggingCarousel = document.querySelector(".draggable");
 
-      let downX = 0;
-      let prevX = 0;
+      function checkMouse(event) {
+        return event.pointerType === "mouse";
+      }
+
       let isDragging = false;
+      let startX = 0;
+      let lastX = 0;
+      let velocity = 0;
+      let lastTime = 0;
 
       draggingCarousel.addEventListener("pointerdown", (event) => {
-        event.preventDefault();
-        console.log("down");
-        downX = event.clientX;
-        prevX = event.clientX;
+        checkMouse(event);
+
         isDragging = true;
+        startYX = lastX = event.clientY;
+        velocity = 0;
+        lastTime = performance.now();
+
+        event.preventDefault();
       });
 
       draggingCarousel.addEventListener("pointermove", (event) => {
         if (!isDragging) return;
-        event.preventDefault();
-        downX = event.clientX;
-        const dx = prevX - downX;
-        draggingCarousel.scrollLeft += dx;
-        prevX = downX;
+        checkMouse(event);
+
+        const now = performance.now();
+        const dx = event.clientX - lastX;
+        const dt = now - lastTime;
+
+        draggingCarousel.scrollLeft -= dx;
+
+        velocity = dx / dt;
+        lastX = event.clientX;
+        lastTime = now;
       });
 
       draggingCarousel.addEventListener("pointerup", (event) => {
-        event.preventDefault();
-        console.log("up");
+        if (!isDragging) return;
+        checkMouse(event);
         isDragging = false;
+
+        // momentum
+        const friction = 0.95;
+
+        function animate() {
+          if (Math.abs(velocity) < 0.01) return;
+          console.log(velocity);
+          draggingCarousel.scrollLeft -= velocity * 16;
+          velocity *= friction;
+
+          requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
       });
     </script>
   </body>
