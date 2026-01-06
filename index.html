@@ -129,7 +129,7 @@
       <p>- Not native but allows for more customisation</p>
       <p>- Lose sideways scrolling on desktop (two finger drag sideways)</p>
       <p>- Can lead to unintended behaviour</p>
-      <div class="carousel draggable"></div>
+      <div id="draggable" class="carousel draggable"></div>
     </div>
 
     <script>
@@ -168,11 +168,19 @@
         }
       }
 
-      const draggingCarousel = document.querySelector(".draggable");
+      const draggingCarousel = document.querySelector("#draggable");
 
       function checkMouse(event) {
-        console.log(event.pointerType)
-        return event.pointerType === "mouse";
+        if (event.pointerType === "mouse") {
+          event.preventDefault();
+          draggingCarousel.classList.remove("scrollable");
+          draggingCarousel.classList.add("dragable");
+          return true;
+        } else {
+          draggingCarousel.classList.remove("dragable");
+          draggingCarousel.classList.add("scrollable");
+          return false;
+        }
       }
 
       let isDragging = false;
@@ -182,19 +190,16 @@
       let lastTime = 0;
 
       draggingCarousel.addEventListener("pointerdown", (event) => {
-        if(!checkMouse(event)) return;
+        if (!checkMouse(event)) return;
 
         isDragging = true;
         startX = lastX = event.clientX;
         velocity = 0;
         lastTime = performance.now();
-
-        event.preventDefault();
       });
 
       draggingCarousel.addEventListener("pointermove", (event) => {
         if (!isDragging || !checkMouse(event)) return;
-        
 
         const now = performance.now();
         const dx = event.clientX - lastX;
@@ -209,7 +214,7 @@
 
       draggingCarousel.addEventListener("pointerup", (event) => {
         if (!isDragging || !checkMouse(event)) return;
-        
+
         isDragging = false;
 
         // momentum
