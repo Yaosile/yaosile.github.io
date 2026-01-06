@@ -182,7 +182,7 @@
       let lastTime = 0;
 
       draggingCarousel.addEventListener("pointerdown", (event) => {
-        checkMouse(event);
+        if(!checkMouse(event)) return;
 
         isDragging = true;
         startX = lastX = event.clientX;
@@ -193,8 +193,8 @@
       });
 
       draggingCarousel.addEventListener("pointermove", (event) => {
-        if (!isDragging) return;
-        checkMouse(event);
+        if (!isDragging || !checkMouse(event)) return;
+        
 
         const now = performance.now();
         const dx = event.clientX - lastX;
@@ -208,8 +208,8 @@
       });
 
       draggingCarousel.addEventListener("pointerup", (event) => {
-        if (!isDragging) return;
-        checkMouse(event);
+        if (!isDragging || !checkMouse(event)) return;
+        
         isDragging = false;
 
         // momentum
