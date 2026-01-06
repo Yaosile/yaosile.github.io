@@ -185,7 +185,7 @@
         checkMouse(event);
 
         isDragging = true;
-        startYX = lastX = event.clientY;
+        startX = lastX = event.clientX;
         velocity = 0;
         lastTime = performance.now();
 
@@ -217,7 +217,6 @@
 
         function animate() {
           if (Math.abs(velocity) < 0.01) return;
-          console.log(velocity);
           draggingCarousel.scrollLeft -= velocity * 16;
           velocity *= friction;
 
