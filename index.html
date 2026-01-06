@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <template id="card">
+    <div class="card">
+      <h1>HEALTH</h1>
+    </div>
+  </template>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: aliceblue;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .carousel {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+        overflow-x: scroll;
+        overflow-y: visible;
+        width: 100%;
+        scrollbar-width: none;
+        scroll-snap-type: x mandatory;
+        padding: 1rem;
+        scroll-padding: 1rem;
+      }
+
+      .card {
+        scroll-behavior: smooth;
+        scroll-snap-align: start;
+        display: flex;
+        flex: 0 0 22rem;
+        align-items: center;
+        flex-direction: column;
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
+      }
+
+      form {
+        margin: 1rem;
+        padding: 1rem;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="options">
+      <label>Number of NBAs</label>
+      <input name="number" type="number" value="7" min="0" />
+    </form>
+
+    <div class="carousel"></div>
+
+    <script>
+      const form = document.getElementById("options");
+      function cloneCard() {
+        return document.querySelector("#card").content.cloneNode(true);
+      }
+      form.addEventListener("change", (event) => {
+        render();
+      });
+
+      window.addEventListener("load", (event) => {
+        render();
+      });
+
+      function render() {
+        const { number } = Object.fromEntries(new FormData(form));
+
+        let cards = [];
+        for (let i = 0; i < number; i++) {
+          const card = cloneCard();
+          cards.push(card);
+        }
+
+        for (const carousel of caoursels) {
+          carousel.innerHTML = "";
+          for (const card of cards) {
+            carousel.appendChild(card);
+          }
+        }
+      }
+      const caoursels = document.querySelectorAll(".carousel");
+    </script>
+  </body>
+</html>
