@@ -126,16 +126,21 @@
     </div>
 
     <div class="option">
-      <h1>Option 2 (EDIT: MIXED NOW)</h1>
+      <h1>Option 2</h1>
       <p>- Support drag scrolling on desktop</p>
       <p>- Not native but allows for more customisation</p>
       <p>- Lose sideways scrolling on desktop (two finger drag sideways)</p>
       <p>- Can lead to unintended behaviour</p>
-      <p>
-        EDIT: has been mixed so that touch screen inputs behave as normal and
-        mouse inputs behave like mouse
-      </p>
       <div id="draggable" class="carousel scrollable"></div>
+    </div>
+
+    <div class="option">
+      <h1>Option 3</h1>
+      <p>- Mixed</p>
+      <p>- Native touch (mobile devices)</p>
+      <p>- Replaced mouse with drag</p>
+      <p>- Desktop supports two finger scrolling as well now</p>
+      <div id="draggable-mixed" class="carousel scrollable"></div>
     </div>
 
     <script>
@@ -177,15 +182,17 @@
       }
 
       const draggingCarousel = document.querySelector("#draggable");
+      const mixed = document.querySelector("#draggable-mixed");
 
       function checkMouse(event) {
         if (event.pointerType === "mouse") {
           event.preventDefault();
           draggingCarousel.classList.replace("scrollable", "draggable");
+          mixed.classList.replace("scrollable", "draggable");
           return true;
         } else {
-          console.log(event.pointerType);
           draggingCarousel.classList.replace("draggable", "scrollable");
+          mixed.classList.replace("draggable", "scrollable");
           return false;
         }
       }
@@ -198,8 +205,15 @@
       let friction = 0.95;
 
       draggingCarousel.addEventListener("pointerdown", (event) => {
-        if (!checkMouse(event)) return;
+        event.preventDefault();
+        isDragging = true;
+        startX = lastX = event.clientX;
+        velocity = 0;
+        lastTime = performance.now();
+      });
 
+      mixed.addEventListener("pointerdown", (event) => {
+        if (!checkMouse(event)) return;
         isDragging = true;
         startX = lastX = event.clientX;
         velocity = 0;
@@ -207,7 +221,8 @@
       });
 
       draggingCarousel.addEventListener("pointermove", (event) => {
-        if (!isDragging || !checkMouse(event)) return;
+        if (!isDragging) return;
+        event.preventDefault();
 
         const now = performance.now();
         const dx = event.clientX - lastX;
@@ -220,14 +235,45 @@
         lastTime = now;
       });
 
-      draggingCarousel.addEventListener("pointerup", (event) => {
+      mixed.addEventListener("pointermove", (event) => {
         if (!isDragging || !checkMouse(event)) return;
+
+        const now = performance.now();
+        const dx = event.clientX - lastX;
+        const dt = now - lastTime;
+
+        mixed.scrollLeft -= dx;
+
+        velocity = dx / dt;
+        lastX = event.clientX;
+        lastTime = now;
+      });
+
+      draggingCarousel.addEventListener("pointerup", (event) => {
+        if (!isDragging) return;
+        event.preventDefault();
 
         isDragging = false;
 
         function animate() {
           if (Math.abs(velocity) < 0.01) return;
           draggingCarousel.scrollLeft -= velocity * 16;
+          velocity *= friction;
+
+          requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+      });
+
+      mixed.addEventListener("pointerup", (event) => {
+        if (!isDragging || !checkMouse(event)) return;
+        mixed.classList.replace("draggable", "scrollable");
+        isDragging = false;
+
+        function animate() {
+          if (Math.abs(velocity) < 0.01) return;
+          mixed.scrollLeft -= velocity * 16;
           velocity *= friction;
 
           requestAnimationFrame(animate);
