@@ -124,12 +124,13 @@
     </div>
 
     <div class="option">
-      <h1>Option 2</h1>
+      <h1>Option 2 (EDIT: MIXED NOW)</h1>
       <p>- Support drag scrolling on desktop</p>
       <p>- Not native but allows for more customisation</p>
       <p>- Lose sideways scrolling on desktop (two finger drag sideways)</p>
       <p>- Can lead to unintended behaviour</p>
-      <div id="draggable" class="carousel draggable"></div>
+      <p>EDIT: has been mixed so that touch screen inputs behave as normal and mouse inputs behave like mouse</p>
+      <div id="draggable" class="carousel scrollable"></div>
     </div>
 
     <script>
@@ -173,12 +174,11 @@
       function checkMouse(event) {
         if (event.pointerType === "mouse") {
           event.preventDefault();
-          draggingCarousel.classList.remove("scrollable");
-          draggingCarousel.classList.add("dragable");
+          draggingCarousel.classList.replace("scrollable", "draggable");
           return true;
         } else {
-          draggingCarousel.classList.remove("dragable");
-          draggingCarousel.classList.add("scrollable");
+          console.log(event.pointerType);
+          draggingCarousel.classList.replace("draggable", "scrollable");
           return false;
         }
       }
