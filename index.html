@@ -81,6 +81,10 @@
         font-size: 20cqw;
       }
 
+      .dragging {
+        touch-action: none;
+      }
+
       form {
         margin: 1rem;
         padding: 1rem;
@@ -195,9 +199,19 @@
         }
       }
 
+      function stopPan(isDragging) {
+        if (isDragging && !draggingCarousel.classList.contains("dragging")) {
+          draggingCarousel.classList.add("dragging");
+        } else {
+          draggingCarousel.classList.remove("dragging");
+        }
+      }
+
       let isDragging = false;
       let startX = 0;
       let lastX = 0;
+      let startY = 0;
+      let lastY = 0;
       let velocity = 0;
       let lastTime = 0;
       let friction = 0.95;
@@ -214,6 +228,7 @@
         if (!checkMouse(event)) return;
         isDragging = true;
         startX = lastX = event.clientX;
+        startY = lastY = event.clientY;
         velocity = 0;
         lastTime = performance.now();
       });
@@ -224,6 +239,8 @@
 
         const now = performance.now();
         const dx = event.clientX - lastX;
+        const dy = event.clientY - lastY;
+        if (Math.abs(dx) > Math.abs(dy)) stopPan(isDragging);
         const dt = now - lastTime;
 
         draggingCarousel.scrollLeft -= dx;
@@ -252,6 +269,7 @@
         event.preventDefault();
 
         isDragging = false;
+        stopPan(isDragging);
 
         function animate() {
           if (Math.abs(velocity) < 0.01) return;
