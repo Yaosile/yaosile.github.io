@@ -110,6 +110,8 @@
         <option value="large">Large</option>
         <option value="small">Small</option>
       </select>
+      <label>Desktop Friction Factor</label>
+      <input name="ff" type="number" value="0.95" min="0" max="1" />
     </form>
 
     <div class="option">
@@ -129,7 +131,10 @@
       <p>- Not native but allows for more customisation</p>
       <p>- Lose sideways scrolling on desktop (two finger drag sideways)</p>
       <p>- Can lead to unintended behaviour</p>
-      <p>EDIT: has been mixed so that touch screen inputs behave as normal and mouse inputs behave like mouse</p>
+      <p>
+        EDIT: has been mixed so that touch screen inputs behave as normal and
+        mouse inputs behave like mouse
+      </p>
       <div id="draggable" class="carousel scrollable"></div>
     </div>
 
@@ -154,9 +159,11 @@
       });
 
       function render() {
-        const { number, snapping, size } = Object.fromEntries(
+        const { number, snapping, size, ff } = Object.fromEntries(
           new FormData(form)
         );
+
+        friction = ff;
 
         for (const carousel of caoursels) {
           carousel.innerHTML = "";
@@ -188,6 +195,7 @@
       let lastX = 0;
       let velocity = 0;
       let lastTime = 0;
+      let friction = 0.95;
 
       draggingCarousel.addEventListener("pointerdown", (event) => {
         if (!checkMouse(event)) return;
@@ -216,9 +224,6 @@
         if (!isDragging || !checkMouse(event)) return;
 
         isDragging = false;
-
-        // momentum
-        const friction = 0.95;
 
         function animate() {
           if (Math.abs(velocity) < 0.01) return;
