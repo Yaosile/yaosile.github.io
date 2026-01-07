@@ -131,7 +131,7 @@
       <p>- Not native but allows for more customisation</p>
       <p>- Lose sideways scrolling on desktop (two finger drag sideways)</p>
       <p>- Can lead to unintended behaviour</p>
-      <div id="draggable" class="carousel scrollable"></div>
+      <div id="draggable" class="carousel draggable"></div>
     </div>
 
     <div class="option">
@@ -187,11 +187,9 @@
       function checkMouse(event) {
         if (event.pointerType === "mouse") {
           event.preventDefault();
-          draggingCarousel.classList.replace("scrollable", "draggable");
           mixed.classList.replace("scrollable", "draggable");
           return true;
         } else {
-          draggingCarousel.classList.replace("draggable", "scrollable");
           mixed.classList.replace("draggable", "scrollable");
           return false;
         }
